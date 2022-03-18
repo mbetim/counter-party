@@ -1,3 +1,4 @@
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,7 +7,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { TransformBadRequestFilter } from 'src/transform-bad-request.filter';
 
+@UsePipes(new ValidationPipe())
+@UseFilters(TransformBadRequestFilter)
 @WebSocketGateway()
 export class EventsGateway
   implements
