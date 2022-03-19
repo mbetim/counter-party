@@ -19,6 +19,8 @@ export class Party {
     this.socketRoomName = `party:${this.name}`;
     this.host = props.host;
     this.incrementOptions = props.incrementOptions;
+
+    this.connectedUsers.set(this.host.username, this.host);
   }
 
   addUser(user: User): void {
@@ -41,9 +43,7 @@ export class Party {
   }
 
   removeUser(user: User) {
-    if (this.host === user) {
-      return this.dispose();
-    }
+    if (this.host === user) return this.dispose();
 
     this.connectedUsers.delete(user.username);
     user.leaveParty();
