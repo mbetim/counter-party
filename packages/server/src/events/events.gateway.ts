@@ -31,14 +31,14 @@ export class EventsGateway
   afterInit(
     server: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   ) {
-    server.use((socket, next) => {
-      const { username } = socket.handshake.auth;
+    server.use((client, next) => {
+      const { username } = client.handshake.auth;
       if (!username) return next(new WsException('Username is required'));
 
       if (this.users.has(username))
         return next(new WsException('Username is already taken'));
 
-      this.users.set(socket.id, new User(socket));
+      this.users.set(client.id, new User(client));
       next();
     });
   }
@@ -48,9 +48,18 @@ export class EventsGateway
   }
 
   handleDisconnect(client: Socket) {
-    console.log('User disconnected: ', client.id);
+    const user = this.users.get(client.id);
 
-    this.users.delete(client.handshake.auth.username);
+    if (user.party && user.isAHost) {
+      client.to(user.party.socketRoomName).emit('party:dispose');
+      user.party.dispose();
+      this.parties.delete(user.party.name);
+    }
+
+    user.disconnect();
+    this.users.delete(client.id);
+
+    console.log('User disconnected: ', user.username);
   }
 
   @SubscribeMessage('party:create')
@@ -71,6 +80,22 @@ export class EventsGateway
     host.joinParty(party);
     this.parties.set(party.name, party);
 
+    return party.toJson();
+  }
+
+  @SubscribeMessage('party:join')
+  joinParty(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('name') partyName?: string,
+  ) {
+    if (!partyName) throw new WsException('Party name is required');
+
+    const user = this.users.get(client.id);
+    const party = this.parties.get(partyName);
+
+    if (!party) throw new WsException('Party does not exist');
+
+    party.addUser(user);
     return party.toJson();
   }
 }
