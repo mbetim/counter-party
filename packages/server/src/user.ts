@@ -5,6 +5,7 @@ export class User {
   username: string;
   socket: Socket;
   party?: Party;
+  counter = 0;
 
   constructor(socket: Socket) {
     this.socket = socket;
@@ -19,6 +20,7 @@ export class User {
 
   joinParty(party: Party) {
     this.party = party;
+    this.counter = 0;
 
     this.socket.join(this.party.socketRoomName);
     this.socket
@@ -28,12 +30,12 @@ export class User {
 
   leaveParty() {
     if (this.party) {
+      // TODO: Check if this is really required
       this.socket
         .to(this.party.socketRoomName)
         .emit('party:update', this.party.toJson());
 
       this.socket.leave(this.party.socketRoomName);
-
       this.party = undefined;
     }
   }
@@ -43,6 +45,6 @@ export class User {
   }
 
   toJson() {
-    return { username: this.username };
+    return { username: this.username, points: this.counter };
   }
 }

@@ -7,6 +7,7 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
+  WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -25,12 +26,16 @@ export class EventsGateway
     OnGatewayConnection<Socket>,
     OnGatewayDisconnect<Socket>
 {
+  @WebSocketServer()
+  server: Server;
+
   users = new Map<string, User>();
   parties = new Map<string, Party>();
 
   afterInit(
     server: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   ) {
+    this.server = server;
     server.use((client, next) => {
       const { username } = client.handshake.auth;
       if (!username) return next(new WsException('Username is required'));
@@ -50,13 +55,16 @@ export class EventsGateway
   handleDisconnect(client: Socket) {
     const user = this.users.get(client.id);
 
+    // TODO: Think if this is the best way to handle the situation
     if (user.party && user.isAHost) {
       client.to(user.party.socketRoomName).emit('party:dispose');
-      user.party.dispose();
+
       this.parties.delete(user.party.name);
+      user.party.dispose();
+    } else {
+      user.disconnect();
     }
 
-    user.disconnect();
     this.users.delete(client.id);
 
     console.log('User disconnected: ', user.username);
@@ -97,5 +105,23 @@ export class EventsGateway
 
     party.addUser(user);
     return party.toJson();
+  }
+
+  @SubscribeMessage('party:update-counter')
+  userIncrement(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('points') points: number,
+  ) {
+    const user = this.users.get(client.id);
+
+    if (!user.party) throw new WsException('You are not in a party');
+    if (!user.party.incrementOptions.includes(points))
+      throw new WsException('Invalid points');
+
+    user.counter += points ? Number(points) : 0;
+
+    this.server
+      .to(user.party.socketRoomName)
+      .emit('party:update', user.party.toJson());
   }
 }
