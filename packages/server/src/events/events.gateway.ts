@@ -58,16 +58,17 @@ export class EventsGateway
   handleDisconnect(client: Socket) {
     const user = this.usersService.findOneBySocketId(client.id);
 
-    // TODO: Think if this is the best way to handle the situation
     if (user.party && user.isAHost) {
       client.to(user.party.socketRoomName).emit('party:dispose');
       client.to(user.party.socketRoomName).disconnectSockets();
 
-      user.party.dispose();
-
       this.partiesService.delete(user.party);
-    } else {
-      user.disconnect();
+    } else if (user.party) {
+      const party = user.party;
+      party.removeUser(user);
+
+      client.to(party.socketRoomName).emit('party:user:left', user.toJson());
+      client.to(party.socketRoomName).emit('party:update', party.toJson());
     }
 
     this.usersService.delete(user);
@@ -92,6 +93,8 @@ export class EventsGateway
     host.joinParty(party);
     this.partiesService.create(party);
 
+    client.join(party.socketRoomName);
+
     return party.toJson();
   }
 
@@ -108,6 +111,11 @@ export class EventsGateway
     if (!party) throw new WsException('Party does not exist');
 
     party.addUser(user);
+
+    client.join(party.socketRoomName);
+    client.to(party.socketRoomName).emit('party:user:joined', user.toJson());
+    client.to(party.socketRoomName).emit('party:update', party.toJson());
+
     return party.toJson();
   }
 

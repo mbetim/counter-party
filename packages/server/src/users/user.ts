@@ -21,21 +21,10 @@ export class User {
   joinParty(party: Party) {
     this.party = party;
     this.counter = 0;
-
-    this.socket.join(this.party.socketRoomName);
-    this.socket
-      .to(this.party.socketRoomName)
-      .emit('party:update', this.party.toJson());
   }
 
   leaveParty() {
     if (this.party) {
-      // TODO: Check if this is really required
-      this.socket
-        .to(this.party.socketRoomName)
-        .emit('party:update', this.party.toJson());
-
-      this.socket.leave(this.party.socketRoomName);
       this.party = undefined;
     }
   }

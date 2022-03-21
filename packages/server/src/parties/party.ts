@@ -17,10 +17,11 @@ export class Party {
   constructor(props: PartyConstructorProps) {
     this.name = nanoid(6);
     this.socketRoomName = `party:${this.name}`;
-    this.host = props.host;
-    this.incrementOptions = props.incrementOptions;
 
+    this.host = props.host;
     this.connectedUsers.set(this.host.username, this.host);
+
+    this.incrementOptions = props.incrementOptions;
   }
 
   addUser(user: User): void {
@@ -34,17 +35,7 @@ export class Party {
     user.joinParty(this);
   }
 
-  dispose() {
-    this.mapToArray().forEach((connectedUser) => {
-      connectedUser.leaveParty();
-    });
-
-    this.connectedUsers.clear();
-  }
-
   removeUser(user: User) {
-    if (this.host === user) return this.dispose();
-
     this.connectedUsers.delete(user.username);
     user.leaveParty();
   }
