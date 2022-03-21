@@ -1,6 +1,6 @@
 import { WsException } from '@nestjs/websockets';
 import { nanoid } from 'nanoid';
-import { User } from '../user';
+import { User } from '../users/user';
 
 interface PartyConstructorProps {
   host: User;

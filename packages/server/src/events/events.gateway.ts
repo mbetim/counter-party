@@ -13,9 +13,11 @@ import {
 import { Server, Socket } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { CreatePartyDto } from 'src/parties/dto/create-party.dto';
-import { User } from 'src/user';
+import { User } from 'src/users/user';
 import { TransformBadRequestFilter } from 'src/transform-bad-request.filter';
 import { Party } from 'src/parties/party';
+import { PartiesService } from 'src/parties/parties.service';
+import { UsersService } from 'src/users/users.service';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(TransformBadRequestFilter)
@@ -29,21 +31,22 @@ export class EventsGateway
   @WebSocketServer()
   server: Server;
 
-  users = new Map<string, User>();
-  parties = new Map<string, Party>();
+  constructor(
+    private usersService: UsersService,
+    private partiesService: PartiesService,
+  ) {}
 
   afterInit(
     server: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   ) {
-    this.server = server;
     server.use((client, next) => {
       const { username } = client.handshake.auth;
       if (!username) return next(new WsException('Username is required'));
 
-      if (this.users.has(username))
+      if (this.usersService.findOneByUsername(username))
         return next(new WsException('Username is already taken'));
 
-      this.users.set(client.id, new User(client));
+      this.usersService.create(new User(client));
       next();
     });
   }
@@ -53,20 +56,21 @@ export class EventsGateway
   }
 
   handleDisconnect(client: Socket) {
-    const user = this.users.get(client.id);
+    const user = this.usersService.findOneBySocketId(client.id);
 
     // TODO: Think if this is the best way to handle the situation
     if (user.party && user.isAHost) {
       client.to(user.party.socketRoomName).emit('party:dispose');
+      client.to(user.party.socketRoomName).disconnectSockets();
 
-      this.parties.delete(user.party.name);
       user.party.dispose();
+
+      this.partiesService.delete(user.party);
     } else {
       user.disconnect();
     }
 
-    this.users.delete(client.id);
-
+    this.usersService.delete(user);
     console.log('User disconnected: ', user.username);
   }
 
@@ -75,7 +79,7 @@ export class EventsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: CreatePartyDto,
   ) {
-    const host = this.users.get(client.id);
+    const host = this.usersService.findOneBySocketId(client.id);
     let party: Party;
 
     do {
@@ -83,10 +87,10 @@ export class EventsGateway
         host,
         incrementOptions: data.incrementOptions,
       });
-    } while (this.parties.has(party.name));
+    } while (this.partiesService.findOneByName(party.name));
 
     host.joinParty(party);
-    this.parties.set(party.name, party);
+    this.partiesService.create(party);
 
     return party.toJson();
   }
@@ -98,8 +102,8 @@ export class EventsGateway
   ) {
     if (!partyName) throw new WsException('Party name is required');
 
-    const user = this.users.get(client.id);
-    const party = this.parties.get(partyName);
+    const user = this.usersService.findOneBySocketId(client.id);
+    const party = this.partiesService.findOneByName(partyName);
 
     if (!party) throw new WsException('Party does not exist');
 
@@ -112,7 +116,7 @@ export class EventsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody('points') points: number,
   ) {
-    const user = this.users.get(client.id);
+    const user = this.usersService.findOneBySocketId(client.id);
 
     if (!user.party) throw new WsException('You are not in a party');
     if (!user.party.incrementOptions.includes(points))

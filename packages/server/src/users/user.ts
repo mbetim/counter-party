@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { Party } from './parties/party';
+import { Party } from '../parties/party';
 
 export class User {
   username: string;
