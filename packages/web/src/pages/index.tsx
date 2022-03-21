@@ -1,13 +1,18 @@
 import { Typography } from "@mui/material";
 import type { GetServerSideProps, NextPage } from "next";
 import { parseCookies } from "nookies";
+import { PageContainer } from "../components/PageContainer";
 
 interface Props {
   username: string;
 }
 
 const Home: NextPage<Props> = ({ username }) => {
-  return <Typography variant="h3">Hello, {username}</Typography>;
+  return (
+    <PageContainer title="Home">
+      <Typography variant="h3">Hello, {username}</Typography>
+    </PageContainer>
+  );
 };
 
 export default Home;
