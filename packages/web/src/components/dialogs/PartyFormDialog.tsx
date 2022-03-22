@@ -29,7 +29,7 @@ const initialValues: FormData = {
 };
 
 const validationSchema = yup.object({
-  incrementOptions: yup.array(yup.number()).required(),
+  incrementOptions: yup.array(yup.number()).max(6).required(),
 });
 
 export const PartyFormDialog: React.FC<PartyFormDialogProps> = ({ isOpen, onClose, onSubmit }) => (
@@ -75,6 +75,7 @@ export const PartyFormDialog: React.FC<PartyFormDialogProps> = ({ isOpen, onClos
                     color="primary"
                     onClick={() => push(0)}
                     startIcon={<Add />}
+                    disabled={values.incrementOptions.length >= 6}
                   >
                     Add option
                   </Button>
