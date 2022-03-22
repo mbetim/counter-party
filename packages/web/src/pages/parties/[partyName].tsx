@@ -41,6 +41,12 @@ const PartyPage: NextPage = () => {
     });
   }, [connect, partyName, router.isReady, socket]);
 
+  const sortedConnectedUsers = useMemo(() => {
+    if (!party) return [];
+
+    return party.connectedUsers.sort((a, b) => a.username.localeCompare(b.username));
+  }, [party]);
+
   const sortedIncrementOptions = useMemo(() => {
     if (!party) return [];
 
@@ -75,7 +81,7 @@ const PartyPage: NextPage = () => {
       </Typography>
 
       <List>
-        {party?.connectedUsers.map((user) => (
+        {sortedConnectedUsers.map((user) => (
           <ListItem key={user.username}>
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: "primary.main" }}>{user.username.substring(0, 2)}</Avatar>
