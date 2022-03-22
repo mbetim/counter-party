@@ -1,6 +1,8 @@
 import { ContentCopy } from "@mui/icons-material";
 import {
   Avatar,
+  Button,
+  Grid,
   IconButton,
   List,
   ListItem,
@@ -39,9 +41,27 @@ const PartyPage: NextPage = () => {
     });
   }, [connect, partyName, router.isReady, socket]);
 
+  const sortedIncrementOptions = useMemo(() => {
+    if (!party) return [];
+
+    if (party.incrementOptions.length >= 6) return party.incrementOptions.sort();
+
+    const negativeSortedValues = party.incrementOptions
+      .filter((value) => value < 0)
+      .sort()
+      .reverse();
+    const positiveSortedValues = party.incrementOptions.filter((value) => value > 0).sort();
+
+    return [...negativeSortedValues, ...positiveSortedValues];
+  }, [party]);
+
   const copyPartyName = () => {
     navigator.clipboard.writeText(partyName);
     alert("Copied to clipboard!");
+  };
+
+  const updateCounter = (value: number) => {
+    socket.emit("party:update-counter", { points: value });
   };
 
   return (
@@ -65,6 +85,16 @@ const PartyPage: NextPage = () => {
           </ListItem>
         ))}
       </List>
+
+      <Grid container spacing={2}>
+        {sortedIncrementOptions.map((option) => (
+          <Grid item xs={sortedIncrementOptions.length >= 6 ? 4 : true} key={option}>
+            <Button variant="contained" fullWidth onClick={() => updateCounter(option)}>
+              {option}
+            </Button>
+          </Grid>
+        ))}
+      </Grid>
     </PageContainer>
   );
 };

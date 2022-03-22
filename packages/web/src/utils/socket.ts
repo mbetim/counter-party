@@ -11,6 +11,7 @@ interface ServerToClientEvents {
 interface ClientToServerEvents {
   "party:create": (data: { incrementOptions: number[] }, callback: PartyCallback) => void;
   "party:join": (data: { name: string }, callback: PartyCallback) => void;
+  "party:update-counter": (data: { points: number }) => void;
 }
 
 const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
