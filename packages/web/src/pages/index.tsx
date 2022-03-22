@@ -1,30 +1,40 @@
 import { Button, Grid, Typography } from "@mui/material";
 import type { GetServerSideProps, NextPage } from "next";
+import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { PartyFormDialog, FormData } from "../components/dialogs/PartyFormDialog";
 import { PageContainer } from "../components/PageContainer";
-import { socket } from "../utils/socket";
+import { useSocket } from "../hooks/useSocket";
+import { Party } from "../types/party";
 
 interface Props {
   username: string;
 }
 
 const Home: NextPage<Props> = ({ username }) => {
+  const router = useRouter();
+  const { socket, connect } = useSocket();
+
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     if (socket.connected) return;
 
-    socket.auth = { username };
-    socket.connect();
+    connect();
 
     socket.once("connect_error", () => {
       // TODO: Handle this error
       console.log("Failed to connect to socket");
     });
+  }, [connect, socket, username]);
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [username]);
+  const createParty = async (data: FormData) => {
+    socket.emit("party:create", data, (party: Party) => {
+      router.push(`/parties/${party.name}`);
+      console.log("party created", party);
+    });
+  };
 
   return (
     <PageContainer title="Home">
@@ -34,7 +44,7 @@ const Home: NextPage<Props> = ({ username }) => {
 
       <Grid container spacing={2} sx={{ mt: 2 }}>
         <Grid item xs={12} md={6}>
-          <Button variant="outlined" fullWidth>
+          <Button variant="outlined" fullWidth onClick={() => setIsOpen(true)}>
             Create a party
           </Button>
         </Grid>
@@ -45,6 +55,8 @@ const Home: NextPage<Props> = ({ username }) => {
           </Button>
         </Grid>
       </Grid>
+
+      <PartyFormDialog isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={createParty} />
     </PageContainer>
   );
 };
