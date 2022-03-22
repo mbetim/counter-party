@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material";
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
 import { useEffect } from "react";
@@ -13,13 +13,10 @@ import { useDialog } from "../hooks/useDialog";
 import { useSocket } from "../hooks/useSocket";
 import { Party } from "../types/party";
 
-interface Props {
-  username: string;
-}
-
-const Home: NextPage<Props> = ({ username }) => {
+const Home: NextPage = () => {
   const router = useRouter();
   const { socket, connect } = useSocket();
+  const { username } = parseCookies(null);
 
   const partyFormDialog = useDialog();
   const joinPartyDialog = useDialog();
@@ -78,19 +75,3 @@ const Home: NextPage<Props> = ({ username }) => {
 };
 
 export default Home;
-
-export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
-  const { username } = parseCookies(ctx);
-
-  if (!username)
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: true,
-      },
-    };
-
-  return {
-    props: { username },
-  };
-};

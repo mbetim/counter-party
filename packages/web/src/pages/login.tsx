@@ -20,7 +20,7 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <PageContainer title="Login">
+    <PageContainer title="Login" shouldCheckUsername={false}>
       <Typography variant="h3" component="h1" fontWeight="bold" align="center">
         Counter party
       </Typography>
