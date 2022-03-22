@@ -33,7 +33,9 @@ const Home: NextPage = () => {
   }, [connect, socket, username]);
 
   const createParty = async (data: CreatePartyFormData) => {
-    socket.emit("party:create", data, (party: Party) => {
+    const incrementOptions = Array.from(new Set(data.incrementOptions));
+
+    socket.emit("party:create", { incrementOptions }, (party: Party) => {
       router.push(`/parties/${party.name}`);
       console.log("party created", party);
     });
