@@ -1,5 +1,13 @@
 import { ContentCopy } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
+import {
+  Avatar,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
@@ -46,9 +54,17 @@ const PartyPage: NextPage = () => {
         </IconButton>
       </Typography>
 
-      {party?.connectedUsers.map((user) => (
-        <Typography key={user.username}>{user.username}</Typography>
-      ))}
+      <List>
+        {party?.connectedUsers.map((user) => (
+          <ListItem key={user.username}>
+            <ListItemAvatar>
+              <Avatar sx={{ bgcolor: "primary.main" }}>{user.username.substring(0, 2)}</Avatar>
+            </ListItemAvatar>
+
+            <ListItemText primary={user.username} secondary={`Points: ${user.points}`} />
+          </ListItem>
+        ))}
+      </List>
     </PageContainer>
   );
 };
