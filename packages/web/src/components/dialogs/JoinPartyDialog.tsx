@@ -30,7 +30,7 @@ export const JoinPartyDialog: React.FC<JoinPartyDialogProps> = ({ isOpen, onClos
       <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
         {() => (
           <Form>
-            <FormikTextField name="name" label="Party name" required fullWidth />
+            <FormikTextField name="name" label="Party name" required fullWidth margin="normal" />
 
             <Stack direction="row" justifyContent="end" sx={{ mt: 2 }}>
               <Button onClick={onClose}>Cancel</Button>
