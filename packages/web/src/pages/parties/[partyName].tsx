@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 import React, { useEffect, useMemo, useState } from "react";
 import { PageContainer } from "../../components/PageContainer";
 import { useSocket } from "../../hooks/useSocket";
@@ -23,6 +24,8 @@ const PartyPage: NextPage = () => {
   const partyName = useMemo(() => router.query.partyName as string, [router.query.partyName]);
 
   const [party, setParty] = useState<Party | null>(null);
+
+  const { username: currentUser } = parseCookies(null);
 
   useEffect(() => {
     if (socket.connected || !router.isReady) return;
@@ -87,7 +90,10 @@ const PartyPage: NextPage = () => {
               <Avatar sx={{ bgcolor: "primary.main" }}>{user.username.substring(0, 2)}</Avatar>
             </ListItemAvatar>
 
-            <ListItemText primary={user.username} secondary={`Points: ${user.points}`} />
+            <ListItemText
+              primary={user.username + `${user.username === currentUser ? " (You)" : ""}`}
+              secondary={`Points: ${user.points}`}
+            />
           </ListItem>
         ))}
       </List>
