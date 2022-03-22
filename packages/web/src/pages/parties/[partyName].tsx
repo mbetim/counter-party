@@ -1,4 +1,4 @@
-import { ContentCopy } from "@mui/icons-material";
+import { ArrowBack, ContentCopy } from "@mui/icons-material";
 import {
   Avatar,
   Button,
@@ -8,6 +8,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import type { NextPage } from "next";
@@ -75,15 +77,25 @@ const PartyPage: NextPage = () => {
 
   return (
     <PageContainer title="Party">
-      <Typography variant="h3" component="h1" align="center" sx={{ mb: 2 }}>
-        <span>Party name: {partyName} </span>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Tooltip title="Leave" arrow>
+          <IconButton onClick={() => router.push("/")}>
+            <ArrowBack />
+          </IconButton>
+        </Tooltip>
 
-        <IconButton onClick={copyPartyName}>
-          <ContentCopy />
-        </IconButton>
-      </Typography>
+        <Typography variant="h4" component="h1" align="center" sx={{ flex: 1 }}>
+          <span>Party: {partyName} </span>
 
-      <List>
+          <Tooltip title="Copy party name" arrow>
+            <IconButton onClick={copyPartyName}>
+              <ContentCopy />
+            </IconButton>
+          </Tooltip>
+        </Typography>
+      </Stack>
+
+      <List sx={{ my: 2 }}>
         {sortedConnectedUsers.map((user) => (
           <ListItem key={user.username}>
             <ListItemAvatar>
