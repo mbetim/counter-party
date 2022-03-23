@@ -15,6 +15,7 @@ import {
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useMemo, useState } from "react";
 import { PageContainer } from "../../components/PageContainer";
 import { useSocket } from "../../hooks/useSocket";
@@ -24,6 +25,7 @@ const PartyPage: NextPage = () => {
   const router = useRouter();
   const { socket, connect } = useSocket();
   const partyName = useMemo(() => router.query.partyName as string, [router.query.partyName]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [party, setParty] = useState<Party | null>(null);
 
@@ -63,7 +65,7 @@ const PartyPage: NextPage = () => {
 
   const copyPartyName = () => {
     navigator.clipboard.writeText(partyName);
-    alert("Copied to clipboard!");
+    enqueueSnackbar("Party name copied to clipboard");
   };
 
   const updateCounter = (value: number) => {
