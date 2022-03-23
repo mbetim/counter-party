@@ -3,6 +3,7 @@ import { CacheProvider, ThemeProvider } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { SnackbarProvider } from "notistack";
 import { createEmotionCache } from "../utils/createEmotionCache";
 import { theme } from "../utils/theme";
 
@@ -19,9 +20,14 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
+        <SnackbarProvider
+          variant="success"
+          disableWindowBlurListener
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <CssBaseline />
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ThemeProvider>
     </CacheProvider>
   );
