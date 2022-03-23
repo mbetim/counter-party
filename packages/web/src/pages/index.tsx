@@ -25,11 +25,6 @@ const Home: NextPage = () => {
     if (socket.connected) return;
 
     connect();
-
-    socket.once("connect_error", () => {
-      // TODO: Handle this error
-      console.log("Failed to connect to socket");
-    });
   }, [connect, socket, username]);
 
   const createParty = async (data: CreatePartyFormData) => {

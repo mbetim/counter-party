@@ -39,11 +39,6 @@ const PartyPage: NextPage = () => {
     });
 
     socket.on("party:update", setParty);
-
-    socket.on("exception", (err) => {
-      // TODO: Handle this error
-      console.log("exception", err);
-    });
   }, [connect, partyName, router.isReady, socket]);
 
   const sortedConnectedUsers = useMemo(() => {
