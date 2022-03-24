@@ -1,4 +1,4 @@
-import { ArrowBack, ContentCopy } from "@mui/icons-material";
+import { ArrowBack, ContentCopy } from '@mui/icons-material';
 import {
   Avatar,
   Button,
@@ -11,20 +11,23 @@ import {
   Stack,
   Tooltip,
   Typography,
-} from "@mui/material";
-import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import { useSnackbar } from "notistack";
-import React, { useEffect, useMemo, useState } from "react";
-import { PageContainer } from "../../components/PageContainer";
-import { useSocket } from "../../hooks/useSocket";
-import { Party } from "../../types/party";
+} from '@mui/material';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useSnackbar } from 'notistack';
+import React, { useEffect, useMemo, useState } from 'react';
+import { PageContainer } from '../../components/PageContainer';
+import { useSocket } from '../../hooks/useSocket';
+import { Party } from '../../types/party';
 
 const PartyPage: NextPage = () => {
   const router = useRouter();
   const { socket, connect } = useSocket();
-  const partyName = useMemo(() => router.query.partyName as string, [router.query.partyName]);
+  const partyName = useMemo(
+    () => router.query.partyName as string,
+    [router.query.partyName],
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const [party, setParty] = useState<Party | null>(null);
@@ -36,47 +39,52 @@ const PartyPage: NextPage = () => {
 
     connect();
 
-    socket.once("connect", () => {
-      socket.emit("party:join", { name: partyName }, setParty);
+    socket.once('connect', () => {
+      socket.emit('party:join', { name: partyName }, setParty);
     });
 
-    socket.on("party:update", setParty);
+    socket.on('party:update', setParty);
   }, [connect, partyName, router.isReady, socket]);
 
   const sortedConnectedUsers = useMemo(() => {
     if (!party) return [];
 
-    return party.connectedUsers.sort((a, b) => a.username.localeCompare(b.username));
+    return party.connectedUsers.sort((a, b) =>
+      a.username.localeCompare(b.username),
+    );
   }, [party]);
 
   const sortedIncrementOptions = useMemo(() => {
     if (!party) return [];
 
-    if (party.incrementOptions.length >= 6) return party.incrementOptions.sort();
+    if (party.incrementOptions.length >= 6)
+      return party.incrementOptions.sort();
 
     const negativeSortedValues = party.incrementOptions
       .filter((value) => value < 0)
       .sort()
       .reverse();
-    const positiveSortedValues = party.incrementOptions.filter((value) => value > 0).sort();
+    const positiveSortedValues = party.incrementOptions
+      .filter((value) => value > 0)
+      .sort();
 
     return [...negativeSortedValues, ...positiveSortedValues];
   }, [party]);
 
   const copyPartyName = () => {
     navigator.clipboard.writeText(partyName);
-    enqueueSnackbar("Party name copied to clipboard");
+    enqueueSnackbar('Party name copied to clipboard');
   };
 
   const updateCounter = (value: number) => {
-    socket.emit("party:update-counter", { points: value });
+    socket.emit('party:update-counter', { points: value });
   };
 
   return (
     <PageContainer title="Party">
       <Stack direction="row" alignItems="center" spacing={1}>
         <Tooltip title="Leave" arrow>
-          <IconButton onClick={() => router.push("/")}>
+          <IconButton onClick={() => router.push('/')}>
             <ArrowBack />
           </IconButton>
         </Tooltip>
@@ -96,11 +104,16 @@ const PartyPage: NextPage = () => {
         {sortedConnectedUsers.map((user) => (
           <ListItem key={user.username}>
             <ListItemAvatar>
-              <Avatar sx={{ bgcolor: "primary.main" }}>{user.username.substring(0, 2)}</Avatar>
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                {user.username.substring(0, 2)}
+              </Avatar>
             </ListItemAvatar>
 
             <ListItemText
-              primary={user.username + `${user.username === currentUser ? " (You)" : ""}`}
+              primary={
+                user.username +
+                `${user.username === currentUser ? ' (You)' : ''}`
+              }
               secondary={`Points: ${user.points}`}
             />
           </ListItem>
@@ -109,8 +122,16 @@ const PartyPage: NextPage = () => {
 
       <Grid container spacing={2}>
         {sortedIncrementOptions.map((option) => (
-          <Grid item xs={sortedIncrementOptions.length >= 6 ? 4 : true} key={option}>
-            <Button variant="contained" fullWidth onClick={() => updateCounter(option)}>
+          <Grid
+            item
+            xs={sortedIncrementOptions.length >= 6 ? 4 : true}
+            key={option}
+          >
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={() => updateCounter(option)}
+            >
               {option}
             </Button>
           </Grid>

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
 interface UseDialogProps<T> {
   open: boolean;
@@ -13,9 +13,13 @@ export interface UseDialogReturn<T> {
   toggle: (newData?: T) => void;
 }
 
-export function useDialog<T>(initialState?: UseDialogProps<T>): UseDialogReturn<T> {
+export function useDialog<T>(
+  initialState?: UseDialogProps<T>,
+): UseDialogReturn<T> {
   const [isOpen, setIsOpen] = useState(initialState?.open || false);
-  const [data, setData] = useState<T | undefined>(initialState?.data || undefined);
+  const [data, setData] = useState<T | undefined>(
+    initialState?.data || undefined,
+  );
 
   const open = useCallback((newData?: T) => {
     setData(newData);

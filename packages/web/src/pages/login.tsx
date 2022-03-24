@@ -1,8 +1,8 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { useRouter } from "next/router";
-import { setCookie } from "nookies";
-import React, { FormEvent } from "react";
-import { PageContainer } from "../components/PageContainer";
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
+import { setCookie } from 'nookies';
+import React, { FormEvent } from 'react';
+import { PageContainer } from '../components/PageContainer';
 
 export const Login: React.FC = () => {
   const usernameRef = React.useRef<HTMLInputElement>(null);
@@ -15,8 +15,8 @@ export const Login: React.FC = () => {
 
     if (!username) return;
 
-    setCookie(null, "username", username, { path: "/" });
-    router.replace("/");
+    setCookie(null, 'username', username, { path: '/' });
+    router.replace('/');
   };
 
   return (
@@ -30,7 +30,12 @@ export const Login: React.FC = () => {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-        <TextField inputRef={usernameRef} name="username" label="Username" fullWidth />
+        <TextField
+          inputRef={usernameRef}
+          name="username"
+          label="Username"
+          fullWidth
+        />
 
         <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
           Submit

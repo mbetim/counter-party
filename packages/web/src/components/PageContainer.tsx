@@ -1,8 +1,8 @@
-import { CircularProgress, Container, Stack } from "@mui/material";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import React, { useEffect, useState } from "react";
+import { CircularProgress, Container, Stack } from '@mui/material';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import React, { useEffect, useState } from 'react';
 
 interface PagesContainerProps {
   title: string;
@@ -21,15 +21,17 @@ export const PageContainer: React.FC<PagesContainerProps> = ({
   useEffect(() => {
     const { username } = parseCookies(null);
 
-    if (shouldCheckUsername && !username && router.pathname !== "/login") {
-      router.replace("/login");
+    if (shouldCheckUsername && !username && router.pathname !== '/login') {
+      router.replace('/login');
     } else {
       setIsLoading(false);
     }
   }, [router, shouldCheckUsername]);
 
   return (
-    <Stack sx={{ height: "100vh", justifyContent: "center", alignItems: "center" }}>
+    <Stack
+      sx={{ height: '100vh', justifyContent: 'center', alignItems: 'center' }}
+    >
       <Head>
         <title>{title} - Counter party</title>
       </Head>

@@ -1,4 +1,4 @@
-import { Add, Close } from "@mui/icons-material";
+import { Add, Close } from '@mui/icons-material';
 import {
   Button,
   Dialog,
@@ -8,11 +8,11 @@ import {
   IconButton,
   Stack,
   Typography,
-} from "@mui/material";
-import { FieldArray, Form, Formik } from "formik";
-import React from "react";
-import { FormikTextField } from "../formik/FormikTextField";
-import * as yup from "yup";
+} from '@mui/material';
+import { FieldArray, Form, Formik } from 'formik';
+import React from 'react';
+import { FormikTextField } from '../formik/FormikTextField';
+import * as yup from 'yup';
 
 export interface FormData {
   incrementOptions: number[];
@@ -32,12 +32,20 @@ const validationSchema = yup.object({
   incrementOptions: yup.array(yup.number()).max(6).required(),
 });
 
-export const PartyFormDialog: React.FC<PartyFormDialogProps> = ({ isOpen, onClose, onSubmit }) => (
+export const PartyFormDialog: React.FC<PartyFormDialogProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}) => (
   <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
     <DialogTitle>Create a party</DialogTitle>
 
     <DialogContent>
-      <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
         {({ values }) => (
           <Form>
             <Typography>Increment options:</Typography>

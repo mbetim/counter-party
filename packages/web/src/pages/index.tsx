@@ -1,17 +1,17 @@
-import { Button, Grid, Typography } from "@mui/material";
-import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { parseCookies } from "nookies";
-import { useEffect } from "react";
-import { JoinPartyDialog } from "../components/dialogs/JoinPartyDialog";
+import { Button, Grid, Typography } from '@mui/material';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { parseCookies } from 'nookies';
+import { useEffect } from 'react';
+import { JoinPartyDialog } from '../components/dialogs/JoinPartyDialog';
 import {
   FormData as CreatePartyFormData,
   PartyFormDialog,
-} from "../components/dialogs/PartyFormDialog";
-import { PageContainer } from "../components/PageContainer";
-import { useDialog } from "../hooks/useDialog";
-import { useSocket } from "../hooks/useSocket";
-import { Party } from "../types/party";
+} from '../components/dialogs/PartyFormDialog';
+import { PageContainer } from '../components/PageContainer';
+import { useDialog } from '../hooks/useDialog';
+import { useSocket } from '../hooks/useSocket';
+import { Party } from '../types/party';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -30,9 +30,9 @@ const Home: NextPage = () => {
   const createParty = async (data: CreatePartyFormData) => {
     const incrementOptions = Array.from(new Set(data.incrementOptions));
 
-    socket.emit("party:create", { incrementOptions }, (party: Party) => {
+    socket.emit('party:create', { incrementOptions }, (party: Party) => {
       router.push(`/parties/${party.name}`);
-      console.log("party created", party);
+      console.log('party created', party);
     });
   };
 

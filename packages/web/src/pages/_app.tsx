@@ -1,11 +1,11 @@
-import { EmotionCache } from "@emotion/cache";
-import { CacheProvider, ThemeProvider } from "@emotion/react";
-import { CssBaseline } from "@mui/material";
-import type { AppProps } from "next/app";
-import Head from "next/head";
-import { SnackbarProvider } from "notistack";
-import { createEmotionCache } from "../utils/createEmotionCache";
-import { theme } from "../utils/theme";
+import { EmotionCache } from '@emotion/cache';
+import { CacheProvider, ThemeProvider } from '@emotion/react';
+import { CssBaseline } from '@mui/material';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { SnackbarProvider } from 'notistack';
+import { createEmotionCache } from '../utils/createEmotionCache';
+import { theme } from '../utils/theme';
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -13,7 +13,11 @@ interface MyAppProps extends AppProps {
 
 const clientSideEmotionCache = createEmotionCache();
 
-function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: MyAppProps) {
+function MyApp({
+  Component,
+  emotionCache = clientSideEmotionCache,
+  pageProps,
+}: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -23,7 +27,7 @@ function MyApp({ Component, emotionCache = clientSideEmotionCache, pageProps }: 
         <SnackbarProvider
           variant="success"
           disableWindowBlurListener
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <CssBaseline />
           <Component {...pageProps} />
