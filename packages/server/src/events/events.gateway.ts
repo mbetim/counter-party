@@ -58,12 +58,7 @@ export class EventsGateway
   handleDisconnect(client: Socket) {
     const user = this.usersService.findOneBySocketId(client.id);
 
-    if (user.party && user.isAHost) {
-      client.to(user.party.socketRoomName).emit('party:dispose');
-      client.to(user.party.socketRoomName).disconnectSockets();
-
-      this.partiesService.delete(user.party);
-    } else if (user.party) {
+    if (user.party) {
       const party = user.party;
       party.removeUser(user);
 

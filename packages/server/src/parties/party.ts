@@ -25,9 +25,6 @@ export class Party {
   }
 
   addUser(user: User): void {
-    if (this.host.username === user.username)
-      throw new WsException('You cannot join your own party');
-
     if (this.connectedUsers.has(user.username))
       throw new WsException('You are already in this party');
 
