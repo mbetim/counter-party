@@ -21,7 +21,7 @@ import { UsersService } from 'src/users/users.service';
 
 @UsePipes(new ValidationPipe())
 @UseFilters(TransformBadRequestFilter)
-@WebSocketGateway(80, { cors: { origin: '*' } })
+@WebSocketGateway({ cors: { origin: '*', methods: ['GET', 'POST'] } })
 export class EventsGateway
   implements
     OnGatewayInit<Server>,
